@@ -9,7 +9,7 @@ const app = express();
 //  CORS CONFIG
 app.use(
   cors({
-    origin: ["http://localhost:5175", "http://localhost:5176"],
+    origin: ["http://localhost:5175", "http://localhost:5176" ,"https://image-gallery-client-aksk09i7y-abhinandan-guptas-projects.vercel.app" ,"https://image-gallery-abhi.netlify.app/"],
     credentials: true,
   })
 );
