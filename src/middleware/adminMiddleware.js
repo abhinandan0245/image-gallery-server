@@ -13,14 +13,14 @@ const adminProtect = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // 🔥 IMPORTANT LINE (THIS WAS MISSING)
+      //  IMPORTANT LINE (THIS WAS MISSING)
       const admin = await Admin.findById(decoded.id).select("-password");
 
       if (!admin) {
         return res.status(401).json({ message: "Admin not authorized" });
       }
 
-      // 🔥 Attach admin to request
+      //  Attach admin to request
       req.admin = admin;
 
       next();

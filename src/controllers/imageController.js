@@ -50,6 +50,51 @@ export const getImages = async (req, res) => {
   }
 };
 
+export const getImageById = async (req, res) => {
+  try {
+    const image = await Image.findById(req.params.id);  
+    if (!image) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+    res.json(image);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// 🔹 Get Images by Same User (Excluding current image)
+// 
+
+export const getImageBySameAdmin = async (req, res) => {
+  try {
+    const imageId = req.params.id;
+    
+    console.log("Getting images by same admin for image ID:", imageId);
+    
+    // 1. Find the current image
+    const currentImage = await Image.findById(imageId);
+    if (!currentImage) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+    
+    console.log("Current image uploaded by:", currentImage.uploadedBy);
+    
+    // 2. Find other images by the same admin (excluding current image)
+    const images = await Image.find({
+      uploadedBy: currentImage.uploadedBy,
+      _id: { $ne: imageId }
+    })
+    .sort({ createdAt: -1 }) // Latest first
+    .limit(6); // Limit to 6 images
+    
+    console.log(`Found ${images.length} images by same admin`);
+    
+    res.json(images);
+  } catch (error) {
+    console.error("Error in getImageBySameAdmin:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // 🔹 Delete Image
 export const deleteImage = async (req, res) => {

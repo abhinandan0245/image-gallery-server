@@ -5,7 +5,9 @@ import {
   deleteImage,
   editImage,
   likeUnlikeImage,
-  getLikedImages
+  getLikedImages,
+  getImageById,
+  getImageBySameAdmin
 } from "../controllers/imageController.js";
 
 import adminProtect from "../middleware/adminMiddleware.js";
@@ -19,9 +21,11 @@ const router = express.Router();
  * Website + Admin dono ke liye
  */
 router.get("/", getImages);
+router.get("/:id", getImageById);
+router.get("/:id/same-admin", getImageBySameAdmin);
 
 /**
- * ❤️ USER ROUTES
+ *  USER ROUTES
  */
 router.put("/:id/like", protect, likeUnlikeImage);
 router.get("/liked/me", protect, getLikedImages);
