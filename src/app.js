@@ -35,6 +35,7 @@ const allowedOrigins = [
   "http://localhost:5175",
   "http://localhost:5176",
   "https://image-gallery-client-aksk09i7y-abhinandan-guptas-projects.vercel.app",
+  "https://image-gallery-client-git-main-abhinandan-guptas-projects.vercel.app/",
   "https://image-gallery-abhi.netlify.app", // NO trailing slash
 ];
 
