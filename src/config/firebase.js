@@ -22,7 +22,7 @@
 
 
 import admin from "firebase-admin";
-
+    
 if (!process.env.FIREBASE_CREDENTIALS) {
   throw new Error("FIREBASE_CREDENTIALS is missing in environment variables");
 }
