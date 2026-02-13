@@ -34,6 +34,13 @@ router.get("/liked/me", protect, getLikedImages);
  * ADMIN ROUTES
  */
 router.post("/", adminProtect, upload.single("image"), uploadImage);
+// Bulk image upload
+router.post(
+  "/upload-multiple",
+  adminProtect,
+  upload.array("images", 10), // max 10 files
+  uploadImage
+);
 router.put("/:id", adminProtect, editImage);
 router.delete("/:id", adminProtect, deleteImage);
 

@@ -10,4 +10,7 @@ const imageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+imageSchema.index({ createdAt: -1 }); // used for newest / oldest sorting
+imageSchema.index({ likes: -1 });     // used for popular sorting
+
 export default mongoose.model("Image", imageSchema);

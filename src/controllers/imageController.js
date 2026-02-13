@@ -3,52 +3,83 @@ import User from "../models/User.js";
 
 
 // 🔹 Upload Image (Admin)
+// 🔹 Upload Single or Multiple Images
 export const uploadImage = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: "Image file is required" });
-    }
-
     const { title } = req.body;
 
-    const image = await Image.create({
-      title,
-      imageUrl: req.file.path,
-      uploadedBy: req.admin.email
-    });
+    // Handle multiple files
+    if (req.files && req.files.length > 0) {
+      const imagesData = req.files.map((file) => ({
+        title, // You can customize title per file if needed
+        imageUrl: file.path,
+        uploadedBy: req.admin.email,
+      }));
 
-    res.status(201).json(image);
+      const images = await Image.insertMany(imagesData);
+
+      return res.status(201).json({
+        message: "Images uploaded successfully",
+        images,
+      });
+    }
+
+    // Handle single file
+    if (req.file) {
+      const image = await Image.create({
+        title,
+        imageUrl: req.file.path,
+        uploadedBy: req.admin.email,
+      });
+
+      return res.status(201).json({
+        message: "Image uploaded successfully",
+        image,
+      });
+    }
+
+    // No files sent
+    return res.status(400).json({ message: "No image file provided" });
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ message: error.message });
   }
 };
 
-
 // 🔹 Get All Images (Admin)
 // 🔹 Get All Images (Public + Sorting)
 export const getImages = async (req, res) => {
   try {
-    const { sort = "newest" } = req.query;
+    const { sort = "newest", page = 1, limit = 12 } = req.query;
 
     let sortQuery = {};
 
-    if (sort === "newest") {
-      sortQuery = { createdAt: -1 };
-    } else if (sort === "oldest") {
-      sortQuery = { createdAt: 1 };
-    } else if (sort === "popular") {
-      // sort by likes count
-      sortQuery = { likes: -1 };
-    }
+    if (sort === "newest") sortQuery = { createdAt: -1 };
+    else if (sort === "oldest") sortQuery = { createdAt: 1 };
+    else if (sort === "popular") sortQuery = { likes: -1 };
 
-    const images = await Image.find().sort(sortQuery);
+    const skip = (Number(page) - 1) * Number(limit);
 
-    res.json(images);
+    // Fetch paginated images
+    const images = await Image.find()
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await Image.countDocuments();
+
+    res.json({
+      images,
+      page: Number(page),
+      totalPages: Math.ceil(total / limit),
+      total,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 export const getImageById = async (req, res) => {
   try {
